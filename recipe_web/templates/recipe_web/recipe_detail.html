@@ -1,0 +1,152 @@
+{% extends 'recipe_web/base.html' %}
+{% load static %}
+
+{% block title %}{{ recipe.title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto p-6">
+    <!-- Recipe Image -->
+    {% if recipe.image %}
+        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="w-full h-96 object-cover rounded-lg mb-6">
+    {% endif %}
+
+    <!-- Recipe Info -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold mb-2">{{ recipe.title }}</h1>
+        <div class="flex justify-between items-center mb-4">
+            <div class="flex items-center space-x-4">
+                <p class="text-gray-600">By {{ recipe.author.username }}</p>
+                {% if user != recipe.author %}
+                    <form method="post" action="{% url 'toggle_follow' pk=recipe.author.pk %}" class="inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.path }}">
+                        <button type="submit" class="text-blue-500 hover:text-blue-700">
+                            {% if recipe.author in user.following.all %}Unfollow{% else %}Follow{% endif %}
+                        </button>
+                    </form>
+                {% endif %}
+                
+                <!-- Add Edit/Delete buttons for recipe author -->
+                {% if user == recipe.author %}
+                    <div class="flex space-x-2">
+                        <a href="{% url 'recipe_edit' pk=recipe.pk %}" 
+                           class="text-blue-500 hover:text-blue-700">
+                            Edit
+                        </a>
+                        <a href="{% url 'recipe_delete' pk=recipe.pk %}" 
+                           class="text-red-500 hover:text-red-700">
+                            Delete
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Like and Favorite Buttons -->
+            <div class="flex items-center space-x-4">
+                <form method="post" action="{% url 'toggle_like' pk=recipe.pk %}" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="flex items-center space-x-1">
+                        <i class="fas fa-heart {% if user in recipe.likes.all %}text-red-500{% else %}text-gray-400{% endif %}"></i>
+                        <span>{{ recipe.likes.count }}</span>
+                    </button>
+                </form>
+
+                <form method="post" action="{% url 'toggle_favorite' pk=recipe.pk %}" class="inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button type="submit">
+                        <i class="fas fa-star {% if user in recipe.favorites.all %}text-yellow-400{% else %}text-gray-400{% endif %}"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recipe Details -->
+    <div class="grid grid-cols-3 gap-4 mb-6">
+        <div class="text-center">
+            <p class="font-bold">Cooking Time</p>
+            <p>{{ recipe.cooking_time }} minutes</p>
+        </div>
+        <div class="text-center">
+            <p class="font-bold">Cuisine Type</p>
+            <p>{{ recipe.cuisine_type }}</p>
+        </div>
+        <div class="text-center">
+            <p class="font-bold">Dietary Restrictions</p>
+            <p>{{ recipe.dietary_restrictions|default:"None" }}</p>
+        </div>
+    </div>
+
+    <!-- Description -->
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold mb-2">Description</h2>
+        <p class="text-gray-700">{{ recipe.description }}</p>
+    </div>
+
+    <!-- Ingredients -->
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold mb-2">Ingredients</h2>
+        <p class="text-gray-700 whitespace-pre-line">{{ recipe.ingredients }}</p>
+    </div>
+
+    <!-- Instructions -->
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold mb-2">Instructions</h2>
+        <p class="text-gray-700 whitespace-pre-line">{{ recipe.instructions }}</p>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="mt-8">
+        <h2 class="text-xl font-bold mb-4">Comments ({{ recipe.comment_set.count }})</h2>
+        
+        {% if user.is_authenticated %}
+            <form method="post" action="{% url 'add_comment' recipe.pk %}" class="mb-6">
+                {% csrf_token %}
+                <textarea name="content" rows="3" class="w-full px-4 py-2 border rounded-lg" placeholder="Add a comment..."></textarea>
+                <button type="submit" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Post Comment</button>
+            </form>
+        {% endif %}
+
+        <div class="space-y-4">
+            {% for comment in comments %}
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="font-semibold">{{ comment.user.username }}</p>
+                            <p class="text-gray-600 text-sm">{{ comment.created_at|date:"M d, Y" }}</p>
+                        </div>
+                        {% if user == comment.user %}
+                            <div class="flex space-x-2">
+                                <form method="GET" class="inline">
+                                    <input type="hidden" name="edit_comment" value="{{ comment.pk }}">
+                                    <button type="submit" class="text-blue-500 hover:text-blue-700">Edit</button>
+                                </form>
+                                <form method="post" action="{% url 'delete_comment' pk=comment.pk %}" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-red-500 hover:text-red-700">Delete</button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% if request.GET.edit_comment|slugify == comment.pk|slugify %}
+                        <form method="post" action="{% url 'edit_comment' pk=comment.pk %}" class="mt-2">
+                            {% csrf_token %}
+                            <textarea name="content" class="w-full px-4 py-2 border rounded-lg">{{ comment.content }}</textarea>
+                            <div class="mt-2 space-x-2">
+                                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Save</button>
+                                <a href="{{ request.path }}" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">Cancel</a>
+                            </div>
+                        </form>
+                    {% else %}
+                        <div class="mt-2">
+                            <p>{{ comment.content }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %} 

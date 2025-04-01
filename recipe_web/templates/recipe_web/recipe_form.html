@@ -1,0 +1,94 @@
+{% extends 'recipe_web/base.html' %}
+
+{% block title %}{% if form.instance.pk %}Edit Recipe{% else %}Create New Recipe{% endif %}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto p-6">
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-2xl font-bold mb-6">{{ recipe.pk|yesno:"Edit,Create" }} Recipe</h1>
+
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- Title -->
+            <div>
+                <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                <input type="text" name="title" id="title" required 
+                       value="{{ recipe.title|default:'' }}"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                <textarea name="description" id="description" rows="3" required 
+                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">{{ recipe.description|default:'' }}</textarea>
+            </div>
+
+            <!-- Ingredients -->
+            <div>
+                <label for="ingredients" class="block text-sm font-medium text-gray-700">Ingredients</label>
+                <textarea name="ingredients" id="ingredients" rows="5" required 
+                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">{{ recipe.ingredients|default:'' }}</textarea>
+            </div>
+
+            <!-- Instructions -->
+            <div>
+                <label for="instructions" class="block text-sm font-medium text-gray-700">Instructions</label>
+                <textarea name="instructions" id="instructions" rows="5" required 
+                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">{{ recipe.instructions|default:'' }}</textarea>
+            </div>
+
+            <!-- Cooking Time -->
+            <div>
+                <label for="cooking_time" class="block text-sm font-medium text-gray-700">Cooking Time (minutes)</label>
+                <input type="number" name="cooking_time" id="cooking_time" required 
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                       value="{{ recipe.cooking_time|default:'' }}">
+            </div>
+
+            <!-- Cuisine Type -->
+            <div>
+                <label for="cuisine_type" class="block text-sm font-medium text-gray-700">Cuisine Type</label>
+                <select name="cuisine_type" id="cuisine_type" required 
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    <option value="">Select Cuisine Type</option>
+                    {% for cuisine in cuisine_types %}
+                        <option value="{{ cuisine }}" {% if recipe.cuisine_type == cuisine %}selected{% endif %}>
+                            {{ cuisine }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Dietary Restrictions -->
+            <div>
+                <label for="dietary_restrictions" class="block text-sm font-medium text-gray-700">Dietary Restrictions</label>
+                <select name="dietary_restrictions" id="dietary_restrictions" 
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    <option value="">Select Dietary Restrictions</option>
+                    {% for diet in dietary_restrictions %}
+                        <option value="{{ diet }}" {% if recipe.dietary_restrictions == diet %}selected{% endif %}>
+                            {{ diet }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Image -->
+            <div>
+                <label for="image" class="block text-sm font-medium text-gray-700">Recipe Image</label>
+                <input type="file" name="image" id="image" accept="image/*" 
+                       class="mt-1 block w-full text-sm text-gray-500">
+            </div>
+
+            <!-- Submit Button -->
+            <div class="flex justify-end">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                    {{ recipe.pk|yesno:"Update,Create" }} Recipe
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 
