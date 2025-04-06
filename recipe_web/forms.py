@@ -36,8 +36,8 @@ class PasswordResetForm(forms.Form):
     new_password = forms.CharField(
         widget=forms.PasswordInput, 
         label="New Password", 
-        min_length=8,  # 设置最小长度要求
-        max_length=128,  # 设置最大长度要求
+        min_length=8,  
+        max_length=128, 
         help_text="Your password must be at least 8 characters long."
     )
     confirm_password = forms.CharField(
