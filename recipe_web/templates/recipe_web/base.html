@@ -5,31 +5,48 @@
     <title>Recipe Hub - {% block title %}{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <style>
+        .theme-toggle {
+            display: none !important;  
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
-    <nav class="bg-white shadow-lg">
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-md">
         <div class="max-w-6xl mx-auto px-4">
             <div class="flex justify-between items-center h-16">
-                <a href="{% url 'index' %}" class="text-2xl font-bold">Recipe Hub</a>
-                <div class="flex space-x-4">
-                    <a href="{% url 'recipe_list' %}" class="text-gray-700 hover:text-gray-900">Recipes</a>
+                <a href="{% url 'index' %}" class="text-2xl font-bold text-indigo-600">Recipe Hub</a>
+                <div class="flex items-center space-x-3">
+                    <a href="{% url 'recipe_list' %}" class="text-gray-700 font-medium hover:text-indigo-600 transition">📖 Recipes</a>
+
                     {% if user.is_authenticated %}
-                        <a href="{% url 'recipe_create' %}" class="text-gray-700 hover:text-gray-900">Create Recipe</a>
-                        <a href="{% url 'user_profile' pk=user.pk %}" class="text-gray-700 hover:text-gray-900">Profile</a>
-                        <a href="{% url 'logout' %}" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Logout</a>
+                        <a href="{% url 'recipe_create' %}" class="text-gray-700 font-medium hover:text-indigo-600 transition">➕ Create</a>
+                        <a href="{% url 'user_profile' pk=user.pk %}" class="text-gray-700 font-medium hover:text-indigo-600 transition">👤 Profile</a>
+                        <a href="{% url 'logout' %}" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-md text-sm font-medium transition">Logout</a>
                     {% else %}
-                        <a href="{% url 'register' %}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Register</a>
-                        <a href="{% url 'login' %}" class="text-gray-700 hover:text-gray-900">Login</a>
+                        <a href="{% url 'register' %}" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-md text-sm font-medium transition">Register</a>
+                        <a href="{% url 'login' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-md text-sm font-medium transition">Login</a>
+                        <a href="{% url 'password_reset' %}" class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1.5 rounded-md text-sm font-medium transition">Reset Password</a>
                     {% endif %}
                 </div>
             </div>
         </div>
     </nav>
 
-    <main class="container mx-auto px-4 py-8">
+    <!-- Main Content -->
+    <main class="flex-1 container mx-auto px-4 py-8">
         {% if messages %}
             {% for message in messages %}
-                <div class="mb-4 p-4 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700{% elif message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-blue-100 text-blue-700{% endif %} flex items-center justify-between">
+                <div class="mb-4 p-4 rounded-lg 
+                    {% if message.tags == 'error' %}bg-red-100 text-red-700
+                    {% elif message.tags == 'success' %}bg-green-100 text-green-700
+                    {% else %}bg-blue-100 text-blue-700{% endif %}
+                    flex items-center justify-between">
                     <div class="flex items-center">
                         {% if message.tags == 'success' %}
                             <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -45,13 +62,24 @@
                 </div>
             {% endfor %}
         {% endif %}
+
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="bg-white shadow-lg mt-8">
+    <!-- Footer -->
+    <footer class="bg-white shadow-md mt-8">
         <div class="max-w-6xl mx-auto px-4 py-6">
             <p class="text-center text-gray-600">© 2024 Recipe Hub. All rights reserved.</p>
         </div>
     </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const themeToggle = document.querySelector('.theme-toggle');
+            if (themeToggle) {
+                themeToggle.style.display = 'none';
+            }
+        });
+    </script>
 </body>
-</html> 
+</html>
