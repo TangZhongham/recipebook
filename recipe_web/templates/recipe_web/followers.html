@@ -1,0 +1,43 @@
+{% extends 'recipe_web/base.html' %}
+
+{% block title %}{{ profile_user.username }}'s Followers{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto p-6">
+    <h2 class="text-2xl font-bold mb-6">Followers ({{ followers.count }})</h2>
+    
+    <div class="space-y-4">
+        {% for follower in followers %}
+            <div class="bg-white p-4 rounded-lg shadow flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    {% if follower.profile_picture %}
+                        <img src="{{ follower.profile_picture.url }}" alt="{{ follower.username }}" 
+                             class="w-12 h-12 rounded-full object-cover">
+                    {% else %}
+                        <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                            <span class="text-gray-500 text-xl">{{ follower.username|first|upper }}</span>
+                        </div>
+                    {% endif %}
+                    <div>
+                        <a href="{% url 'user_profile' pk=follower.pk %}" class="font-semibold hover:text-blue-600">
+                            {{ follower.username }}
+                        </a>
+                        <p class="text-sm text-gray-600">{{ follower.recipes.count }} recipes</p>
+                    </div>
+                </div>
+                {% if user != follower %}
+                    <form method="post" action="{% url 'toggle_follow' pk=follower.pk %}" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" 
+                                class="px-4 py-2 rounded-lg {% if follower in user.following.all %}bg-gray-500{% else %}bg-blue-500{% endif %} text-white">
+                            {% if follower in user.following.all %}Unfollow{% else %}Follow{% endif %}
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p class="text-gray-600 text-center">No followers yet</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 
