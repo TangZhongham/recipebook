@@ -1,21 +1,11 @@
 # Recipe Book Application
 
-## Install
-
-1. make sure install python3
-2. in this project dir, run 'pip install -r requirements.txt'
-3. run 'python manage.py runserver'
-4. go to  http://127.0.0.1:8000/ and you should see helloworld.
-5. use your own branch to develop 'git checkout -b <branch-name>'
-
-## Dev Process
-
-1. Use Jira to manage user stories.
-2. Create issues by ourselves to track dev progress.
-3. Pull newest codes to your own branch.
-4. dev. 
-5. Pull newest codes to your own branch and solve conflicts. 
-6. commit and push to your branch, raise a PR on github.
+- [Project Overview](#project-overview)
+- [Code Structure](#code-structure)
+- [Features](#features)
+- [Deployment](#deployment)
+- [Instructions for Running the Application](#instructions-for-running-the-application)
+- [Dependencies](#dependencies)
 
 --------------------------------------------------------------------------------------------------------------
 ## Project Overview
@@ -40,6 +30,47 @@ The project is organized into the following directories and files:
    - 'models.py' : Defines database models.
    - 'urls.py' : App-specific URL configuration.
 4. 'media/' : Stores uploaded media files such as profile pictures and recipe images.
+
+-------------------------------------------------------------------------------------------------------
+## Features
+1. User registration and authentication.
+2. Recipe creation, editing and deletion.
+3. Viewing a list of recipes.
+4. User profile management with profile pictures.
+5. User interaction eg. following and unfollowing other authors.
+6. User interations eg. 'like' and 'unfavorite' recipes 
+6. Add search functionality for recipes.
+7. Implement filtering options eg. by 'Cuisine Types' and 'Dietary Types'.
+
+-------------------------------------------------------------------------------------------------------------
+## Deployment
+
+### Overview
+This section provides instructions to deploy the **Recipe Book Application** using Docker, allowing you to run the application in a containerized environment.
+
+### Prerequisites
+- Docker installed on your machine ([Download Docker](https://www.docker.com/))
+- Ensure the project files are cloned and available in the current directory
+
+### Steps
+
+#### 1. Build the Docker Image
+
+Build the Docker image using the provided `Dockerfile`:
+
+```bash
+docker build -t recipebook .
+```
+
+#### 2. Run the Docker Container
+
+Start a container from the built image, mapping port 8000 on your host to port 8000 in the container:
+
+```bash
+docker run -d -p 8000:8000 recipebook
+```
+
+The -d flag runs the container in detached mode, and -p 8000:8000 ensures the application is accessible at http://localhost:8000/.
 
 -------------------------------------------------------------------------------------------------------------
 ## Instructions for Running the Application
@@ -84,18 +115,6 @@ The project is organized into the following directories and files:
 
 ### CSS Tools
 - Tailwind CSS: Utility-first CSS framework for styling.
-
--------------------------------------------------------------------------------------------------------
-## Features
-1. User registration and authentication.
-2. Recipe creation, editing and deletion.
-3. Viewing a list of recipes.
-4. User profile management with profile pictures.
-5. User interaction eg. following and unfollowing other authors.
-6. User interations eg. 'like' and 'unfavorite' recipes 
-6. Add search functionality for recipes.
-7. Implement filtering options eg. by 'Cuisine Types' and 'Dietary Types'.
-
 
 
 
